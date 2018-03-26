@@ -1,0 +1,3 @@
+setopt rcquotes
+setopt interactivecomments
+
