@@ -2,10 +2,10 @@
 # Executes commands at login, after zshrc.
 #
 
-if [[ -v GOODPATH ]]; then
-    # MacOS workaround sneaky path_helper in /etc/zprofile
-    export PATH=$GOODPATH
-fi
+# if [[ -v GOODPATH ]]; then
+#     # MacOS workaround sneaky path_helper in /etc/zprofile
+#     export PATH=$GOODPATH
+# fi
 
 # Execute code that does not affect the current session in the background.
 {
@@ -44,9 +44,6 @@ fi
 # Paths
 #
 
-# Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath path
-
 # Set the list of directories that cd searches.
 # cdpath=(
 #   $cdpath
@@ -73,6 +70,9 @@ if (( $#commands[(i)lesspipe(|.sh)] )); then
   export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
 fi
 
+if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
 
 if [[ -f "${ZDOTDIR:-$HOME}/.zlogin.local" ]]; then
     source "${ZDOTDIR:-$HOME}/.zlogin.local"
