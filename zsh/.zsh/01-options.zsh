@@ -1,4 +1,4 @@
-# unsetopt sharehistory
+unsetopt sharehistory
 setopt rcquotes
 setopt interactivecomments
 
