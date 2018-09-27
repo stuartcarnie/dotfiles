@@ -29,6 +29,7 @@ bindkey "^K" kill-line
 bindkey "^U" backward-kill-line
 bindkey "^W" backward-kill-word
 bindkey -M vicmd v edit-command-line
+bindkey "^H" run-help
 
 # if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
 # 	function zle-line-init () {
