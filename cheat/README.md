@@ -9,6 +9,6 @@ Install
 * macOS
 
     ```bash
-    brew install cheat
+    brew install --HEAD cheat
     ```
 
