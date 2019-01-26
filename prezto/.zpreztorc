@@ -81,6 +81,13 @@ zstyle ':prezto:module:editor' key-bindings 'vi'
 # zstyle ':prezto:module:gnu-utility' prefix 'g'
 
 #
+# ls
+#
+
+zstyle ':prezto:module:utility:ls' dirs-first 'no'
+zstyle ':prezto:module:utility:ls' color 'no'
+
+#
 # History Substring Search
 #
 
