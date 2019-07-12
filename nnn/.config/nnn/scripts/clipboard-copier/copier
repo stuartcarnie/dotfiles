@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+# Description: Copy selection to clipboard
+#
+# Shell: POSIX compliant
+# Author: Arun Prakash Jana
+
+SELECTION=~/.config/nnn/.selection
+
+# Linux
+# cat "$SELECTION" | xargs -0 | xsel -bi
+
+# macOS
+cat "$SELECTION" | xargs -0 | pbcopy
+
+# Termux
+# cat "$SELECTION" | xargs -0 | termux-clipboard-set
+
+# Cygwin
+# cat "$SELECTION" | xargs -0 | clip

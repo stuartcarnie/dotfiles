@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+echo installing...
+
+# darwin
+
+# install nnn getplugins
+
+[[ ! -d $HOME/.config/nnn/plugins ]] && mkdir -p $HOME/.config/nnn/plugins
+curl --progress-bar -o $HOME/.config/nnn/plugins/getplugs https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs
+chmod u+x $HOME/.config/nnn/plugins/getplugs
+
