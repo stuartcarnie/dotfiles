@@ -13,6 +13,13 @@ if [[ -f "${ZDOTDIR:-$HOME}/.zshrc.local" ]]; then
     source "${ZDOTDIR:-$HOME}/.zshrc.local"
 fi
 
+# Powerline10k config
+
+POWERLEVEL9K_DISABLE_RPROMPT=false
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="↳ "
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs)
 
 # other config
 
