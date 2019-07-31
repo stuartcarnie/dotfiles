@@ -1,4 +1,13 @@
-if has("win32")
+" reliably determine OS per https://vi.stackexchange.com/a/2577
+if !exists("g:os")
+    if has("win64") || has("win32") || has("win16")
+        let g:os = "Windows"
+    else
+        let g:os = substitute(system('uname'), '\n', '', '')
+    endif
+endif
+
+if g:os == "Windows"
     set runtimepath^=~/.vim
     set runtimepath+=~/.vim/after
 endif
@@ -23,6 +32,12 @@ Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'majutsushi/tagbar'
 Plug 'nathanaelkane/vim-indent-guides'
+
+" fzf on macOS
+if g:os == "Darwin"
+    Plug '/usr/local/opt/fzf'
+    Plug 'junegunn/fzf.vim'
+endif
 
 call plug#end()
 

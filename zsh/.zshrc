@@ -14,6 +14,7 @@ if [[ -f "${ZDOTDIR:-$HOME}/.zshrc.local" ]]; then
 fi
 
 # Powerline10k config
+# See: https://github.com/romkatv/powerlevel10k#prezto
 
 POWERLEVEL9K_DISABLE_RPROMPT=false
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
