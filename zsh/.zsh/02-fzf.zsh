@@ -1,6 +1,6 @@
 # setup fuzzy find
 
-[[ $+commands[fzf] == 1 ]] && {
+if is-callable 'fzf'; then 
     export FZF_COMPLETION_TRIGGER='~~'
     export FZF_CTRL_R_OPTS='--sort --exact'
     if type fd > /dev/null; then
@@ -16,4 +16,4 @@
     fi
 
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-}
+fi

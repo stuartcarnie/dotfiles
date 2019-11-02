@@ -39,8 +39,5 @@ if [[ -n "$dircolors" ]]; then
 fi
 unset dircolors
 
-if [[ -n $(command -v gls) ]]; then
-	alias ls="command gls $LS_COMMON"
-fi
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/mc mc
