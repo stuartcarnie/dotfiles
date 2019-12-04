@@ -1,0 +1,15 @@
+# Convert a man page to pdf
+man -t bash | ps2pdf - bash.pdf
+
+# View the ascii chart
+man 7 ascii
+
+# Man page sections
+man 1 <program>
+man 2 <system call>
+man 3 <c function>
+man 4 <device>
+man 5 <file format>
+man 6 <games>
+man 7 <miscellaneous concept>
+man 8 <sysadmin program>
