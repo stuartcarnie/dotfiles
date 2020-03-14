@@ -32,6 +32,7 @@ Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'majutsushi/tagbar'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'terryma/vim-multiple-cursors'
 
 " fzf on macOS
 if g:os == "Darwin"
