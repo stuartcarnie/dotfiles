@@ -7,3 +7,6 @@
 [submodule "cheat/community"]
 	path = cheat/community
 	url = https://github.com/cheat/cheatsheets.git
+[submodule "lldb/modules/chisel"]
+	path = lldb/modules/chisel
+	url = https://github.com/facebook/chisel.git
