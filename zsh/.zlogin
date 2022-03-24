@@ -51,9 +51,12 @@ fi
 
 # Set the list of directories that Zsh searches for programs.
 path=(
+  /opt/homebrew/bin
   /usr/local/{bin,sbin}
   $path
 )
+
+typeset -gU PATH path
 
 #
 # Less
