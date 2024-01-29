@@ -1,0 +1,100 @@
+#compdef launchctl
+local context state state_descr line
+_launchctl_commandname=$words[1]
+typeset -A opt_args
+
+_launchctl() {
+    integer ret=1
+    local -a args
+    args+=(
+        '(-h --help)'{-h,--help}'[Print help information.]'
+        '(-): :->command'
+        '(-)*:: :->arg'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+    case $state in
+        (command)
+            local subcommands
+            subcommands=(
+                'list:Lists information about services.'
+                'load:Bootstraps a service or directory of services.'
+                'error:Prints a description of an error.'
+                'help:Show subcommand help information.'
+            )
+            _describe "subcommand" subcommands
+            ;;
+        (arg)
+            case ${words[1]} in
+                (list)
+                    _launchctl_list
+                    ;;
+                (load)
+                    _launchctl_load
+                    ;;
+                (error)
+                    _launchctl_error
+                    ;;
+                (help)
+                    _launchctl_help
+                    ;;
+            esac
+            ;;
+    esac
+
+    return ret
+}
+
+_launchctl_list() {
+    integer ret=1
+    local -a args
+    args+=(
+        ':service-name:{local -a list; list=(${(f)"$(launchctl list | cut -f3- | tail +2 | sort)"}); _describe '''' list}'
+        '(-h --help)'{-h,--help}'[Print help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+_launchctl_load() {
+    integer ret=1
+    local -a args
+    args+=(
+        '(-h --help)'{-h,--help}'[Print help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+_launchctl_error() {
+    integer ret=1
+    local -a args
+    args+=(
+        ':domain:(posix mach bootstrap)'
+        '(-h --help)'{-h,--help}'[Print help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+_launchctl_help() {
+    integer ret=1
+    local -a args
+    args+=(
+        ':subcommands:'
+        '(-h --help)'{-h,--help}'[Print help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+
+_custom_completion() {
+    local completions=("${(@f)$($*)}")
+    _describe '' completions
+}
+
+_launchctl

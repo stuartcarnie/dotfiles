@@ -3,3 +3,11 @@ settings set target.x86-disassembly-flavor intel
 # Install Chisel https://github.com/facebook/chisel
 
 # command script import /Users/stuartcarnie/.dotfiles/lldb/modules/chisel/fblldb.py
+
+
+# types
+
+type summary add --inline-children OEIntSize
+
+# allow local .lldbinit files to be sourced
+settings set target.load-cwd-lldbinit true

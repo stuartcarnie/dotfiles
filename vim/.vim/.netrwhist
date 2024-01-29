@@ -1,0 +1,12 @@
+﻿let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =2
+let g:netrw_dirhist_2='/Users/stuartcarnie/projects/go/influxdata/telegraf'
+let g:netrw_dirhist_1='/Users/stuartcarnie/projects/go/influxdata/telegraf/plugins/inputs/system'
+let g:netrw_dirhist_0='/Users/stuartcarnie/projects/go/influxdata/telegraf/plugins/inputs/diskio'
+let g:netrw_dirhist_9='/Users/stuartcarnie/projects/go/influxdata/telegraf/plugins/inputs/system'
+let g:netrw_dirhist_8='/Users/stuartcarnie/projects/go/influxdata/telegraf/plugins/inputs/diskio'
+let g:netrw_dirhist_7='/Users/stuartcarnie/projects/go/influxdata/telegraf/plugins/inputs/system'
+let g:netrw_dirhist_6='/Users/stuartcarnie/projects/web/compiler-explorer/etc/config'
+let g:netrw_dirhist_5='/Users/stuartcarnie/projects/web/compiler-explorer/etc'
+let g:netrw_dirhist_4='/Users/stuartcarnie/projects/web/compiler-explorer'
+let g:netrw_dirhist_3='/Volumes/Data/projects/macos/OpenEmu/SNES9x'
