@@ -15,5 +15,5 @@ if is-callable 'fzf'; then
         }
     fi
 
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+    eval "$(fzf --zsh)"
 fi

@@ -75,4 +75,3 @@ unset __conda_setup
 if [[ -f "${ZDOTDIR:-$HOME}/.zshrc.local" ]]; then
     source "${ZDOTDIR:-$HOME}/.zshrc.local"
 fi
-eval "$(um --shell-config)"

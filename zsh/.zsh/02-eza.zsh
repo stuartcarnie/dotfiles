@@ -1,6 +1,6 @@
 if is-callable 'eza'; then
-    alias l='eza --icons -aal --color-scale'
-    alias la='eza --icons -al --color-scale'
-    alias ll='eza --icons -l --color-scale'
-    alias ls='command eza --icons --color-scale'
+    alias l='eza --icons always -aal --color-scale all'
+    alias la='eza --icons always -al --color-scale all'
+    alias ll='eza --icons always -l --color-scale all'
+    alias ls='command eza --icons always --color-scale all'
 fi
