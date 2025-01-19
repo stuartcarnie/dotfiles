@@ -2,13 +2,6 @@
 # scripts that are only required for interactive sessions
 
 if [ ! -v INTELLIJ_ENVIRONMENT_READER ]; then
-    # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-    # Initialization code that may require console input (password prompts, [y/n]
-    # confirmations, etc.) must go above this block; everything else may go below.
-    if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-      source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-    fi
-
     # pending move to zplug
     # source ~/.zplug/init.zsh
 
@@ -19,15 +12,6 @@ if [ ! -v INTELLIJ_ENVIRONMENT_READER ]; then
 
     for config (~/.zsh/*.zsh) source $config
 fi
-
-# Powerline10k config
-# See: https://github.com/romkatv/powerlevel10k#prezto
-
-POWERLEVEL9K_DISABLE_RPROMPT=false
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="↳ "
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs)
 
 # other config
 
@@ -49,9 +33,6 @@ if [ ! -v INTELLIJ_ENVIRONMENT_READER ]; then
 
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C /usr/local/bin/mc mc
-
-    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 fi
 
 
