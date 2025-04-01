@@ -1,0 +1,1 @@
+../external/nu_scripts/custom-completions/bat/bat-completions.nu

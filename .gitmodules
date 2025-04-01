@@ -10,3 +10,6 @@
 [submodule "lldb/modules/chisel"]
 	path = lldb/modules/chisel
 	url = https://github.com/facebook/chisel.git
+[submodule "nushell/external/nu_scripts"]
+	path = nushell/external/nu_scripts
+	url = https://github.com/nushell/nu_scripts.git
