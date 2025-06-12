@@ -51,7 +51,7 @@ let external_completer = {|spans|
     }
 
     match $spans.0 {
-        nu | git | lldb | kill | make => $fish_completer
+        nu | git | lldb | make => $fish_completer
         # use zoxide completions for zoxide commands
         __zoxide_z | __zoxide_zi => $zoxide_completer
         _ => $carapace_completer
@@ -106,6 +106,15 @@ if (which zoxide | is-not-empty) {
     }
 }
 
+## configure pueue
+if (which pueue | is-not-empty) {
+    let init_path = ($nu.data-dir | path join "vendor/autoload/pueue.nu")
+    # lets not write the file every time, but check if it has changed
+    if (not ($init_path | path exists) or (pueue completions nushell | decode utf-8) != (open $init_path | decode utf-8)) {
+        print $"updating ($init_path)"
+        pueue completions nushell | save -f $init_path
+    }
+}
 
 # some ls aliases
 

@@ -32,3 +32,8 @@ def "http download" [url] {
   )
   http get --raw $url | save --progress $filename
 }
+
+# Display disk usage information
+def "df" [] : nothing -> table {
+    ^df -H | detect columns --guess | update cells -c [Used Size Avail] { into filesize }
+}
