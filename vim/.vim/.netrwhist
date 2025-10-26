@@ -1,5 +1,6 @@
 ﻿let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =1
+let g:netrw_dirhistcnt =2
+let g:netrw_dirhist_2='/Users/stuartcarnie/.config/yazi'
 let g:netrw_dirhist_1='/Users/stuartcarnie/projects/go/influxdata/influxdb2-aws/replication/_replicator/clap_blocks'
 let g:netrw_dirhist_0='/Users/stuartcarnie/projects/go/influxdata/influxdb2-aws/replication/_replicator'
 let g:netrw_dirhist_9='/Users/stuartcarnie/projects/go/influxdata/influxdb2-aws/replication/_replicator/target'
@@ -9,4 +10,3 @@ let g:netrw_dirhist_6='/Users/stuartcarnie/projects/godot/test cases/TileFun/.go
 let g:netrw_dirhist_5='/Users/stuartcarnie/projects/godot'
 let g:netrw_dirhist_4='/Users/stuartcarnie/Sites'
 let g:netrw_dirhist_3='/Users/stuartcarnie/tmp/maz'
-let g:netrw_dirhist_2='/Users/stuartcarnie/projects/go/influxdata/telegraf'

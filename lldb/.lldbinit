@@ -2,7 +2,8 @@ settings set target.x86-disassembly-flavor intel
 
 # Install Chisel https://github.com/facebook/chisel
 
-# command script import /Users/stuartcarnie/.dotfiles/lldb/modules/chisel/fblldb.py
+# command script import ~/.dotfiles/lldb/modules/chisel/fblldb.py
+command script import ~/.dotfiles/lldb/modules/rust_rover.py
 
 
 # types

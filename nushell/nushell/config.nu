@@ -19,43 +19,23 @@
 #
 
 # setup advanced completer for nushell
+#
 
-let carapace_completer = {|spans: list<string>|
-    carapace $spans.0 nushell ...$spans
-        | from json
-        | if ($in | default [] | where value == $"($spans | last)ERR" | is-empty) { $in } else { null }
-}
+$env.CARAPACE_BRIDGES = 'zsh,fish'
 
-let fish_completer = {|spans|
-    fish --command $'complete "--do-complete=($spans | str join " ")"'
-    | from tsv --flexible --noheaders --no-infer
-    | rename value description
-}
+let carapace_completer = {|spans|
+  # if the current command is an alias, get it's expansion
+  let expanded_alias = (scope aliases | where name == $spans.0 | $in.0?.expansion?)
 
-let zoxide_completer = {|spans|
-    $spans | skip 1 | zoxide query -l ...$in | lines | where {|x| $x != $env.PWD}
-}
+  # overwrite
+  let spans = (if $expanded_alias != null  {
+    # put the first word of the expanded alias first in the span
+    $spans | skip 1 | prepend ($expanded_alias | split row " " | take 1)
+  } else {
+    $spans | skip 1 | prepend ($spans.0)
+  })
 
-# This completer will use carapace by default
-let external_completer = {|spans|
-    let expanded_alias = scope aliases
-    | where name == $spans.0
-    | get -i 0.expansion
-
-    let spans = if $expanded_alias != null {
-        $spans
-        | skip 1
-        | prepend ($expanded_alias | split row ' ' | take 1)
-    } else {
-        $spans
-    }
-
-    match $spans.0 {
-        nu | git | lldb | make => $fish_completer
-        # use zoxide completions for zoxide commands
-        __zoxide_z | __zoxide_zi => $zoxide_completer
-        _ => $carapace_completer
-    } | do $in $spans
+  carapace $spans.0 nushell ...$spans | from json
 }
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
@@ -81,18 +61,22 @@ if (which starship | is-not-empty) {
 
 if (which atuin | is-not-empty) {
     let init_path = ($nu.data-dir | path join "vendor/autoload/atuin.nu")
+    # TODO(sgc): When atuin is updated, we'll re-enabled this, as I have modified the script
+    #   to use the `--accept` flag to avoid prompting for confirmation
     # lets not write the file every time, but check if it has changed
-    if (not ($init_path | path exists) or (atuin init nu | decode utf-8) != (open $init_path | decode utf-8)) {
-        print $"updating ($init_path)"
-        atuin init nu | save -f $init_path
+    if false {
+        if (not ($init_path | path exists) or (atuin init nu | decode utf-8) != (open $init_path | decode utf-8)) {
+            print $"updating ($init_path)"
+            atuin init nu | save -f $init_path
+        }
     }
 
-    let completions_path = ($nu.data-dir | path join "vendor/autoload/atuin-completions.nu")
+    # let completions_path = ($nu.data-dir | path join "vendor/autoload/atuin-completions.nu")
     # lets not write the file every time, but check if it has changed
-    if (not ($completions_path | path exists) or (atuin gen-completions --shell nushell | decode utf-8) != (open $completions_path | decode utf-8)) {
-        print $"updating ($completions_path)"
-        atuin gen-completions --shell nushell | save -f $completions_path
-    }
+    # if (not ($completions_path | path exists) or (atuin gen-completions --shell nushell | decode utf-8) != (open $completions_path | decode utf-8)) {
+    #    print $"updating ($completions_path)"
+    #    atuin gen-completions --shell nushell | save -f $completions_path
+    # }
 }
 
 ## configure zoxide
@@ -137,7 +121,7 @@ $env.config.show_banner = false
 $env.config.buffer_editor = "zed"
 $env.config.completions.external = {
     enable: true,
-    completer: $external_completer,
+    completer: $carapace_completer,
 }
 
 $env.EDITOR = "nvim"
@@ -148,3 +132,5 @@ use std/util "path add"
 path add $"(brew --prefix sqlite3 | str trim | path join bin)"
 
 source scripts/macos.nu
+
+ulimit -n 10000

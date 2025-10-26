@@ -1,0 +1,11 @@
+[mgr]
+prepend_keymap = [
+    # Preview
+    { on = "<S-Up>", run = "seek -1", desc = "Scroll preview up one unit" },
+    { on = "<S-Down>", run = "seek +1", desc = "Scroll preview down one unit" },
+    { on = "<S-PageUp>", run = "seek -5", desc = "Scroll preview up five units" },
+    { on = "<S-PageDown>", run = "seek +5", desc = "Scroll preview down five units" },
+
+    # Smart Filter plugin
+    { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
+]
