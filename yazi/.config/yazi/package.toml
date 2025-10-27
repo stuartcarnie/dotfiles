@@ -1,12 +1,17 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-filter"
-rev = "e5f00e2"
-hash = "a9d553bd19a3cd7f4eab3abaac5d67ff"
+rev = "8f1d971"
+hash = "bcda8eeb3f4013bae156aecabfc745e8"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "e5f00e2"
-hash = "2143a53182dbbe935a1abd1623424aa5"
+rev = "8f1d971"
+hash = "64713dcd74daf9ec644883a5895e5d1"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "8f1d971"
+hash = "8a7c58225816a163a6e8730c0adafbc8"
 
 [flavor]
 deps = []

@@ -8,4 +8,8 @@ prepend_keymap = [
 
     # Smart Filter plugin
     { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
+
+    # Toggle preview pane
+    { on = ["T", "t"], run = "plugin toggle-pane min-preview", desc = "Show or hide the preview pane" },
+    { on = ["T", "T"], run = "plugin toggle-pane max-preview", desc = "Toggle max preview pane" },
 ]
