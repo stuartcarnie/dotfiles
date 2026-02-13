@@ -7,7 +7,7 @@ def "ramdisk new" [
     print $"Creating RAM disk '($name)' of ($size) / ($sectors) sectors..."
 
     let disk = (hdiutil attach -nomount ram://($sectors) | str trim)
-    ^diskutil erasevolume HFS+ $"($name)" $disk
+    ^diskutil erasevolume APFS $"($name)" $disk
     $disk
 }
 

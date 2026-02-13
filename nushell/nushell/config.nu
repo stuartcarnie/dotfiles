@@ -123,8 +123,19 @@ $env.config.completions.external = {
     enable: true,
     completer: $carapace_completer,
 }
+$env.config.use_kitty_protocol = true
+$env.config.completions.algorithm = "fuzzy"
+
+$env.config.history = {
+  file_format: sqlite
+  max_size: 5_000_000
+  sync_on_enter: true
+  isolation: true
+}
 
 $env.EDITOR = "nvim"
+
+$env.config.hooks.display_output = { if (term size).columns >= 100 { table -e --icons } else { table } }
 
 # use homebrew sqlite3
 
@@ -134,3 +145,7 @@ path add $"(brew --prefix sqlite3 | str trim | path join bin)"
 source scripts/macos.nu
 
 ulimit -n 10000
+
+# Configure nu_plugin_skim
+# See: https://github.com/idanarye/nu_plugin_skim/tree/main
+$env.SKIM_DEFAULT_OPTIONS = "--bind ctrl-o:preview-page-up,ctrl-p:preview-page-down,ctrl-t:toggle-preview"

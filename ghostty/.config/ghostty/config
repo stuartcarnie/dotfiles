@@ -1,0 +1,42 @@
+
+font-family = "Jetbrains Mono"
+font-size = 12
+
+# adjust-cell-height = 34%
+
+# Auto update support
+
+# auto-update = download
+auto-update-channel = tip
+
+# macOS-specific
+
+macos-icon = holographic
+macos-icon-frame = plastic
+macos-icon-ghost-color = ffff00
+macos-option-as-alt = left
+
+# background-opacity = 0.7
+# background-blur = macos-glass-clear
+
+# Splits
+
+unfocused-split-opacity = 0.5
+
+# Shell integration
+shell-integration-features=cursor
+
+command=/Users/stuartcarnie/bin/nu --login
+
+# split-divider-color = ff0000
+keybind = shift+enter=text:\n
+keybind = global:cmd+option+grave_accent=toggle_quick_terminal
+
+keybind = option+page_up=scroll_page_up
+keybind = option+page_down=scroll_page_down
+
+bell-features = system
+
+config-file = keybinds/vim.ghostty
+
+

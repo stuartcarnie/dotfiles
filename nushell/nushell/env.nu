@@ -20,6 +20,7 @@
 
 $env.PATH = ([
     ($env.HOME | path join bin),
+    ($env.HOME | path join .local bin),
     ($env.HOME | path join go bin),
     ($env.HOME | path join .cargo bin),
     ($env.HOME | path join .krew bin),
