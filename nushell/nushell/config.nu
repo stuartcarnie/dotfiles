@@ -40,15 +40,19 @@ let carapace_completer = {|spans|
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
 
+def update-autoload [name: string, generator: closure] {
+    let init_path = ($nu.data-dir | path join $"vendor/autoload/($name)")
+    let content = (do $generator | decode utf-8)
+    if (not ($init_path | path exists) or $content != (open $init_path | decode utf-8)) {
+        print $"updating ($init_path)"
+        $content | save -f $init_path
+    }
+}
+
 ## configure starship prompt
 
 if (which starship | is-not-empty) {
-    let init_path = ($nu.data-dir | path join "vendor/autoload/starship.nu")
-    # lets not write the file every time, but check if it has changed
-    if (not ($init_path | path exists) or (starship init nu | decode utf-8) != (open $init_path | decode utf-8)) {
-        print $"updating ($init_path)"
-        starship init nu | save -f $init_path
-    }
+    update-autoload "starship.nu" { starship init nu }
 
     # avoid same PROMPT_INDICATOR
     $env.PROMPT_INDICATOR = { "" }
@@ -60,16 +64,7 @@ if (which starship | is-not-empty) {
 ## configure atuin
 
 if (which atuin | is-not-empty) {
-    let init_path = ($nu.data-dir | path join "vendor/autoload/atuin.nu")
-    # TODO(sgc): When atuin is updated, we'll re-enabled this, as I have modified the script
-    #   to use the `--accept` flag to avoid prompting for confirmation
-    # lets not write the file every time, but check if it has changed
-    if false {
-        if (not ($init_path | path exists) or (atuin init nu | decode utf-8) != (open $init_path | decode utf-8)) {
-            print $"updating ($init_path)"
-            atuin init nu | save -f $init_path
-        }
-    }
+    update-autoload "atuin.nu" { atuin init nu }
 
     # let completions_path = ($nu.data-dir | path join "vendor/autoload/atuin-completions.nu")
     # lets not write the file every time, but check if it has changed
@@ -82,22 +77,12 @@ if (which atuin | is-not-empty) {
 ## configure zoxide
 
 if (which zoxide | is-not-empty) {
-    let init_path = ($nu.data-dir | path join "vendor/autoload/zoxide.nu")
-    # lets not write the file every time, but check if it has changed
-    if (not ($init_path | path exists) or (zoxide init nushell | decode utf-8) != (open $init_path | decode utf-8)) {
-        print $"updating ($init_path)"
-        zoxide init nushell | save -f $init_path
-    }
+    update-autoload "zoxide.nu" { zoxide init nushell }
 }
 
 ## configure pueue
 if (which pueue | is-not-empty) {
-    let init_path = ($nu.data-dir | path join "vendor/autoload/pueue.nu")
-    # lets not write the file every time, but check if it has changed
-    if (not ($init_path | path exists) or (pueue completions nushell | decode utf-8) != (open $init_path | decode utf-8)) {
-        print $"updating ($init_path)"
-        pueue completions nushell | save -f $init_path
-    }
+    update-autoload "pueue.nu" { pueue completions nushell }
 }
 
 # some ls aliases
@@ -131,6 +116,29 @@ $env.config.history = {
   max_size: 5_000_000
   sync_on_enter: true
   isolation: true
+}
+
+$env.config.line_editor.external.hinter = {
+  enable: true
+  closure: {|ctx|
+    if ($ctx.line | str length) == 0 {
+      null
+    } else {
+      let candidate = (try {
+        ^atuin search --cwd $ctx.cwd --limit 1 --search-mode prefix --cmd-only $ctx.line
+        | lines
+        | first
+      } catch {
+        null
+      })
+
+      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+        null
+      } else {
+        ($candidate | str substring (($ctx.line | str length))..)
+      }
+    }
+  }
 }
 
 $env.EDITOR = "nvim"
