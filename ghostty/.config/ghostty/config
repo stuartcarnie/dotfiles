@@ -7,7 +7,7 @@ font-size = 12
 # Auto update support
 
 # auto-update = download
-auto-update-channel = tip
+auto-update-channel = stable
 
 # macOS-specific
 
