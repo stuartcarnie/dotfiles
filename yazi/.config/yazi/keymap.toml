@@ -12,4 +12,10 @@ prepend_keymap = [
     # Toggle preview pane
     { on = ["T", "t"], run = "plugin toggle-pane min-preview", desc = "Show or hide the preview pane" },
     { on = ["T", "T"], run = "plugin toggle-pane max-preview", desc = "Toggle max preview pane" },
+
+    # DuckDB plugin
+    { on = "H", run = "plugin duckdb -1", desc = "Scroll one column to the left" },
+    { on = "L", run = "plugin duckdb +1", desc = "Scroll one column to the right" },
+    { on = ["g", "o"], run = "plugin duckdb -open", desc = "open with duckdb" },
+    { on = ["g", "u"], run = "plugin duckdb -ui", desc = "open with duckdb ui" }
 ]

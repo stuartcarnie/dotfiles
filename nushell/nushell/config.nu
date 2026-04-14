@@ -64,7 +64,7 @@ if (which starship | is-not-empty) {
 ## configure atuin
 
 if (which atuin | is-not-empty) {
-    update-autoload "atuin.nu" { atuin init nu }
+    #update-autoload "atuin.nu" { atuin init nu }
 
     # let completions_path = ($nu.data-dir | path join "vendor/autoload/atuin-completions.nu")
     # lets not write the file every time, but check if it has changed
@@ -118,19 +118,38 @@ $env.config.history = {
   isolation: true
 }
 
-$env.config.line_editor.external.hinter = {
-  enable: true
+$env.config.hinter = {
   closure: {|ctx|
     if ($ctx.line | str length) == 0 {
       null
     } else {
-      let candidate = (try {
-        ^atuin search --cwd $ctx.cwd --limit 1 --search-mode prefix --cmd-only $ctx.line
+      mut candidate = (try {
+        ^atuin search --filter-mode directory --limit 1 --search-mode prefix --cmd-only $ctx.line
         | lines
         | first
       } catch {
         null
       })
+
+      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+        $candidate = (try {
+            ^atuin search --filter-mode session --limit 1 --search-mode prefix --cmd-only $ctx.line
+            | lines
+            | first
+        } catch {
+            null
+        })
+      }
+
+      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+        $candidate = (try {
+            ^atuin search --filter-mode global --limit 1 --search-mode prefix --cmd-only $ctx.line
+            | lines
+            | first
+        } catch {
+            null
+        })
+      }
 
       if $candidate == null or not ($candidate | str starts-with $ctx.line) {
         null
@@ -157,3 +176,5 @@ ulimit -n 10000
 # Configure nu_plugin_skim
 # See: https://github.com/idanarye/nu_plugin_skim/tree/main
 $env.SKIM_DEFAULT_OPTIONS = "--bind ctrl-o:preview-page-up,ctrl-p:preview-page-down,ctrl-t:toggle-preview"
+
+# use `/Users/stuartcarnie/Library/Application Support/org.dystroy.broot/launcher/nushell/br` *

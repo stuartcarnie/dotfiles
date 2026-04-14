@@ -2,6 +2,43 @@
 
 title_format = "{cwd}"
 
-[[plugin.prepend_previewers]]
-name = "*.md"
-run  = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
+[plugin]
+prepend_previewers = [
+    { url = "*.md", run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"' },
+
+    { url = "*.csv", run = "duckdb" },
+    { url = "*.tsv", run = "duckdb" },
+    #    { url = "*.json", run = "duckdb" },
+    #    { url = "*.jsonl", run = "duckdb" },
+    { url = "*.parquet", run = "duckdb" },
+    #    { url = "*.txt", run = "duckdb" },
+    { url = "*.xlsx", run = "duckdb" },
+    { url = "*.db", run = "duckdb" },
+    { url = "*.duckdb", run = "duckdb" }
+]
+
+prepend_preloaders = [
+    { url = "*.csv", run = "duckdb", multi = false },
+    { url = "*.tsv", run = "duckdb", multi = false },
+    #    { url = "*.json", run = "duckdb", multi = false },
+    #    { url = "*.jsonl", run = "duckdb", multi = false },
+    { url = "*.parquet", run = "duckdb", multi = false },
+    #    { url = "*.txt", run = "duckdb", multi = false },
+    { url = "*.xlsx", run = "duckdb", multi = false }
+]
+
+[opener]
+less = [
+    { run = "less -S %s", block = true, for = "unix" },
+]
+lnav = [
+    { run = "lnav %s", block = true, for = "unix" },
+]
+
+[open]
+prepend_rules = [
+    { url = "*/", use = "forward" },
+    #{ url = "*.log", use = "less" },
+    { url = "*.log", use = "lnav" },
+    { url = "*.jsonl", use = "less" },
+]
