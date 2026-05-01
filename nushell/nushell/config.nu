@@ -1,45 +1,24 @@
-# config.nu
-#
-# Installed by:
-# version = "0.101.0"
-#
-# This file is used to override default Nushell settings, define
-# (or import) custom commands, or run any other startup tasks.
-# See https://www.nushell.sh/book/configuration.html
-#
-# This file is loaded after env.nu and before login.nu
-#
-# You can open this file in your default editor using:
-# config nu
-#
-# See `help config nu` for more options
-#
-# You can remove these comments if you want or leave
-# them for future reference.
-#
-
-# setup advanced completer for nushell
-#
-
 $env.CARAPACE_BRIDGES = 'zsh,fish'
 
 let carapace_completer = {|spans|
-  # if the current command is an alias, get it's expansion
-  let expanded_alias = (scope aliases | where name == $spans.0 | $in.0?.expansion?)
+    # if the current command is an alias, get it's expansion
+    let expanded_alias = (scope aliases | where name == $spans.0 | $in.0?.expansion?)
 
-  # overwrite
-  let spans = (if $expanded_alias != null  {
-    # put the first word of the expanded alias first in the span
-    $spans | skip 1 | prepend ($expanded_alias | split row " " | take 1)
-  } else {
-    $spans | skip 1 | prepend ($spans.0)
-  })
+    let spans = (if $expanded_alias != null {
+        # put the first word of the expanded alias first in the span
+        $spans | skip 1 | prepend ($expanded_alias | split row " " | take 1)
+    } else {
+        $spans | skip 1 | prepend ($spans.0)
+    })
 
-  carapace $spans.0 nushell ...$spans | from json
+    carapace $spans.0 nushell ...$spans | from json
 }
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
 
+# Conditionally update a file with the output of a generator closure, only if the content has changed
+# or the file doesn't exist. This is useful for autoload scripts and completions that need to be
+# updated when their generators change, but we want to avoid unnecessary writes.
 def update-script [base_path: path, name: string, generator: closure] {
     let base_path = ($nu.data-dir | path join $base_path)
     if not ($base_path | path exists) {
@@ -58,8 +37,7 @@ def update-autoload [name: string, generator: closure] {
     update-script vendor/autoload $name $generator
 }
 
-## configure starship prompt
-
+# configure starship prompt
 if (which starship | is-not-empty) {
     update-autoload "starship.nu" { starship init nu }
 
@@ -83,24 +61,23 @@ if (which atuin | is-not-empty) {
     # }
 }
 
-## configure zoxide
-
+# configure zoxide
 if (which zoxide | is-not-empty) {
     update-autoload "zoxide.nu" { zoxide init nushell }
 }
 
-## configure pueue
+# configure pueue
 if (which pueue | is-not-empty) {
     update-script generated_completions/ "pueue.nu" { pueue completions nushell }
 }
 
-# some ls aliases
+# Configure my aliases
 
 alias l  = ls
 alias ll = ls -l
 alias la = ls -al
 
-## configure yazi
+# yazi is also y
 def --env y [...args] {
 	let tmp = (mktemp -t "yazi-cwd.XXXXXX")
 	yazi ...$args --cwd-file $tmp
@@ -121,52 +98,56 @@ $env.config.use_kitty_protocol = true
 $env.config.completions.algorithm = "fuzzy"
 
 $env.config.history = {
-  file_format: sqlite
-  max_size: 5_000_000
-  sync_on_enter: true
-  isolation: true
+    file_format: sqlite
+    max_size: 5_000_000
+    sync_on_enter: true
+    isolation: true
 }
 
+# Configure the command line hinter to use atuin for suggestions
 $env.config.hinter = {
-  closure: {|ctx|
-    if ($ctx.line | str length) == 0 {
-      null
-    } else {
-      mut candidate = (try {
-        ^atuin search --filter-mode directory --limit 1 --search-mode prefix --cmd-only $ctx.line
-        | lines
-        | first
-      } catch {
-        null
-      })
-
-      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-        $candidate = (try {
-            ^atuin search --filter-mode session --limit 1 --search-mode prefix --cmd-only $ctx.line
-            | lines
-            | first
-        } catch {
+    closure: {|ctx|
+        if ($ctx.line | str length) == 0 {
             null
-        })
-      }
+        } else {
+            # First try to get a candidate from the directory history.
+            mut candidate = (try {
+                    ^atuin search --filter-mode directory --limit 1 --search-mode prefix --cmd-only $ctx.line
+                    | lines
+                    | first
+                } catch {
+                    null
+                })
 
-      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-        $candidate = (try {
-            ^atuin search --filter-mode global --limit 1 --search-mode prefix --cmd-only $ctx.line
-            | lines
-            | first
-        } catch {
-            null
-        })
-      }
+            # If that doesn't work, try the current session history.
+            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+                $candidate = (try {
+                        ^atuin search --filter-mode session --limit 1 --search-mode prefix --cmd-only $ctx.line
+                        | lines
+                        | first
+                    } catch {
+                        null
+                    })
+            }
 
-      if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-        null
-      } else {
-        ($candidate | str substring (($ctx.line | str length))..)
-      }
+            # If that still doesn't work, fall back to the global history.
+            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+                $candidate = (try {
+                        ^atuin search --filter-mode global --limit 1 --search-mode prefix --cmd-only $ctx.line
+                        | lines
+                        | first
+                    } catch {
+                        null
+                    })
+            }
+
+            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+                null
+            } else {
+                ($candidate | str substring (($ctx.line | str length))..)
+            }
+        }
     }
-  }
 }
 
 $env.EDITOR = "nvim"
@@ -185,5 +166,3 @@ ulimit -n 10000
 # Configure nu_plugin_skim
 # See: https://github.com/idanarye/nu_plugin_skim/tree/main
 $env.SKIM_DEFAULT_OPTIONS = "--bind ctrl-o:preview-page-up,ctrl-p:preview-page-down,ctrl-t:toggle-preview"
-
-# use `/Users/stuartcarnie/Library/Application Support/org.dystroy.broot/launcher/nushell/br` *

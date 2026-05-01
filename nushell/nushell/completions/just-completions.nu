@@ -1,1 +1,1 @@
-../external/nu_scripts/custom-completions/just/just-completions.nu
+../../external/nu_scripts/custom-completions/just/just-completions.nu
