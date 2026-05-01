@@ -40,13 +40,22 @@ let carapace_completer = {|spans|
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
 
-def update-autoload [name: string, generator: closure] {
-    let init_path = ($nu.data-dir | path join $"vendor/autoload/($name)")
+def update-script [base_path: path, name: string, generator: closure] {
+    let base_path = ($nu.data-dir | path join $base_path)
+    if not ($base_path | path exists) {
+        mkdir $base_path
+    }
+
+    let init_path = ($base_path | path join $name)
     let content = (do $generator | decode utf-8)
     if (not ($init_path | path exists) or $content != (open $init_path | decode utf-8)) {
         print $"updating ($init_path)"
         $content | save -f $init_path
     }
+}
+
+def update-autoload [name: string, generator: closure] {
+    update-script vendor/autoload $name $generator
 }
 
 ## configure starship prompt
@@ -82,7 +91,7 @@ if (which zoxide | is-not-empty) {
 
 ## configure pueue
 if (which pueue | is-not-empty) {
-    update-autoload "pueue.nu" { pueue completions nushell }
+    update-script generated_completions/ "pueue.nu" { pueue completions nushell }
 }
 
 # some ls aliases
@@ -102,7 +111,7 @@ def --env y [...args] {
 	rm -fp $tmp
 }
 
-$env.config.show_banner = false
+$env.config.show_banner = true
 $env.config.buffer_editor = "zed"
 $env.config.completions.external = {
     enable: true,

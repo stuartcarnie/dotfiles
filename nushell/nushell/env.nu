@@ -28,8 +28,9 @@ $env.PATH = ([
     (/usr/libexec/path_helper -c) | str trim | lines | str substring 7.. | parse 'PATH "{value}";' | get value | get 0 | split row ':'
 )) | uniq
 
-# Add default directorys for additional modules
-$env.NU_LIB_DIRS = [
+# Add default directories for additional modules
+$env.NU_LIB_DIRS ++= [
+    (($nu.data-dir | path join "generated_completions"))
     ($nu.default-config-dir | path join "modules")
     ($env.HOME | path join .local share nushell modules )
 ]

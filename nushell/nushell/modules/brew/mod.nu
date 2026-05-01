@@ -2,5 +2,5 @@
 
 # Show outdated brew packages
 export def "outdated" []: nothing -> table {
-    ^brew outdated -v | detect columns --no-headers | reject column2 | rename package prev next
+    ^brew outdated -v | parse --regex '^(?<name>\S+) \((?<current>\S+)\) < (?<latest>\S+)(?: \[pinned at (?<pinned>\S+)\])?$'
 }

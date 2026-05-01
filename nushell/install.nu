@@ -9,5 +9,7 @@ if (which stow | is-empty) {
     exit
 }
 
-^stow -t ($nu.data-dir | path join vendor autoload) -R completions/
-mkdir ($nu.data-dir | path join scripts)
+# ^stow -t ($nu.data-dir | path join vendor autoload) -R completions/
+# ^stow -t $nu.data-dir -R completions/
+^stow -t $nu.data-dir -R nushell
+mkdir ($nu.data-dir | path join vendor autoload)
