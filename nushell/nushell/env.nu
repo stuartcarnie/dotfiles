@@ -34,3 +34,6 @@ $env.NU_LIB_DIRS ++= [
     ($nu.default-config-dir | path join "modules")
     ($env.HOME | path join .local share nushell modules )
 ]
+
+# Configure default options for less
+$env.LESS = -S

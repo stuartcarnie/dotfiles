@@ -17,7 +17,7 @@ def "nu-complete cmake-trace-format" [] {
     ["human", "json-v1"]
 }
 
-def "nu-complete cmake-cache-vars" [] {
+def "nu-complete cmake-cache-list" [] {
     ["build/CMakeCache.txt" "cmake-build*/CMakeCache.txt" "out/*/CMakeCache.txt"]
         | each { glob $in } | flatten
         | each {|f| open $f | lines }
@@ -26,6 +26,40 @@ def "nu-complete cmake-cache-vars" [] {
         | where { $in !~ ':INTERNAL=' and $in !~ ':STATIC=' }
         | parse --regex '^(?<name>[A-Za-z_][A-Za-z0-9_]*):(?<type>[A-Z]+)=(?<val>.*)'
         | each {|e| { value: $"($e.name):($e.type)=", description: $e.val } }
+}
+
+# Complete filesystem paths under `partial`, re-emitting them as `<var><path>`.
+# `dirs_only` restricts to directories (for CMake PATH vars vs FILEPATH).
+def "nu-complete cmake-path" [partial: string, dirs_only: bool, var: string] {
+    let slash = ($partial | str index-of --end '/')
+    let prefix = (if $slash < 0 { '' } else { $partial | str substring ..=$slash })
+    let base = ((if $slash < 0 { $partial } else { $partial | str substring ($slash + 1).. }) | str lowercase)
+    let read_dir = (if ($prefix | is-empty) { '.' } else { $prefix | path expand })
+    let show_hidden = ($base | str starts-with '.')
+    ls -a $read_dir
+        | where type in (if $dirs_only { [dir] } else { [dir file symlink] })
+        | insert n {|e| $e.name | path basename }
+        | where {|e| ($e.n | str lowercase | str starts-with $base) and ($show_hidden or not ($e.n | str starts-with '.')) }
+        | each {|e|
+            let p = $'($prefix)($e.n)' + (if $e.type == dir { '/' } else { '' })
+            { value: $'($var)($p)', description: $e.type, display_override: $p }
+        }
+}
+
+# Completer for `-D <name>[:<type>]=<value>`. For FILEPATH/PATH types, complete
+# filesystem paths for the value; otherwise offer cache entries from CMakeCache.txt.
+def "nu-complete cmake-cache-vars" [line: string, pos: int] {
+    let token = ($line | str substring ..<$pos | split row --regex '\s+' | last)
+    let m = ($token | parse --regex '^(?<name>[^=]+?)(?::(?<type>[A-Z]+))?=(?<partial>.*)$')
+    if ($m | is-not-empty) and ($m.0.type in [FILEPATH PATH]) {
+        let e = $m.0
+        {
+            completions: (nu-complete cmake-path $e.partial ($e.type == PATH) $'($e.name):($e.type)=')
+            options: { filter: false, sort: false }
+        }
+    } else {
+        nu-complete cmake-cache-list
+    }
 }
 
 def "nu-complete cmake-presets" [] {

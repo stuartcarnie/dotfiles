@@ -1,3 +1,5 @@
+use std/util "path add"
+
 $env.CARAPACE_BRIDGES = 'zsh,fish'
 
 let carapace_completer = {|spans|
@@ -15,6 +17,82 @@ let carapace_completer = {|spans|
 }
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
+
+$env.config.abbreviations = {
+    l: "ls"
+    ll: "ls -l"
+    la: "ls -al"
+}
+
+# yazi is also y
+def --env y [...args] {
+	let tmp = (mktemp -t "yazi-cwd.XXXXXX")
+	yazi ...$args --cwd-file $tmp
+	let cwd = (open $tmp)
+	if $cwd != "" and $cwd != $env.PWD {
+		cd $cwd
+	}
+	rm -fp $tmp
+}
+
+$env.config.show_banner = true
+$env.config.buffer_editor = "nvim"
+$env.config.completions.external = {
+    enable: true,
+    completer: $carapace_completer,
+}
+$env.config.use_kitty_protocol = true
+$env.config.completions.algorithm = "fuzzy"
+
+$env.config.history = {
+    file_format: sqlite
+    max_size: 5_000_000
+    sync_on_enter: true
+    isolation: true
+}
+
+# Configure the command line hinter to use atuin for suggestions
+$env.config.hinter = {
+    closure: {|ctx|
+        if ($ctx.line | str length) == 0 {
+            null
+        } else {
+            # First try to get a candidate from the directory history.
+            #
+            # NOTE: Depends on https://github.com/atuinsh/atuin/pull/3535
+            let candidate = (try {
+                    ^atuin search --filter-modes directory,session,global --limit 1 --search-mode prefix --cmd-only $ctx.line
+                    | lines
+                    | first
+                } catch {
+                    null
+                })
+
+            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
+                null
+            } else {
+                ($candidate | str substring (($ctx.line | str length))..)
+            }
+        }
+    }
+}
+
+$env.EDITOR = "nvim"
+
+$env.config.hooks.display_output = { if (term size).columns >= 100 { table -e --icons } else { table } }
+
+# use homebrew sqlite3
+#
+# NOTE: We don't use `brew --prefix sqlite3` as it takes 22ms to execute this command
+path add "/opt/homebrew/opt/sqlite/bin"
+
+source scripts/macos.nu
+
+ulimit -n 10000
+
+# Configure nu_plugin_skim
+# See: https://github.com/idanarye/nu_plugin_skim/tree/main
+$env.SKIM_DEFAULT_OPTIONS = "--bind ctrl-o:preview-page-up,ctrl-p:preview-page-down,ctrl-t:toggle-preview"
 
 # Conditionally update a file with the output of a generator closure, only if the content has changed
 # or the file doesn't exist. This is useful for autoload scripts and completions that need to be
@@ -64,105 +142,22 @@ if (which atuin | is-not-empty) {
 # configure zoxide
 if (which zoxide | is-not-empty) {
     update-autoload "zoxide.nu" { zoxide init nushell }
+
+    # Alt/Option+L: interactive zoxide (fzf) directory query; insert the picked path at the cursor.
+    $env.config.keybindings ++= [{
+        name: zoxide_query_insert
+        modifier: alt
+        keycode: char_l
+        mode: [emacs vi_normal vi_insert]
+        event: {
+            send: executehostcommand
+            # NOTE: leading space keeps this out of atuin history (its `^ .+` history_filter).
+            cmd: " let p = (do -i { zoxide query --interactive } | str trim); if not ($p | is-empty) { commandline edit --insert $p }"
+        }
+    }]
 }
 
 # configure pueue
 if (which pueue | is-not-empty) {
     update-script generated_completions/ "pueue.nu" { pueue completions nushell }
 }
-
-# Configure my aliases
-
-alias l  = ls
-alias ll = ls -l
-alias la = ls -al
-
-# yazi is also y
-def --env y [...args] {
-	let tmp = (mktemp -t "yazi-cwd.XXXXXX")
-	yazi ...$args --cwd-file $tmp
-	let cwd = (open $tmp)
-	if $cwd != "" and $cwd != $env.PWD {
-		cd $cwd
-	}
-	rm -fp $tmp
-}
-
-$env.config.show_banner = true
-$env.config.buffer_editor = "zed"
-$env.config.completions.external = {
-    enable: true,
-    completer: $carapace_completer,
-}
-$env.config.use_kitty_protocol = true
-$env.config.completions.algorithm = "fuzzy"
-
-$env.config.history = {
-    file_format: sqlite
-    max_size: 5_000_000
-    sync_on_enter: true
-    isolation: true
-}
-
-# Configure the command line hinter to use atuin for suggestions
-$env.config.hinter = {
-    closure: {|ctx|
-        if ($ctx.line | str length) == 0 {
-            null
-        } else {
-            # First try to get a candidate from the directory history.
-            mut candidate = (try {
-                    ^atuin search --filter-mode directory --limit 1 --search-mode prefix --cmd-only $ctx.line
-                    | lines
-                    | first
-                } catch {
-                    null
-                })
-
-            # If that doesn't work, try the current session history.
-            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-                $candidate = (try {
-                        ^atuin search --filter-mode session --limit 1 --search-mode prefix --cmd-only $ctx.line
-                        | lines
-                        | first
-                    } catch {
-                        null
-                    })
-            }
-
-            # If that still doesn't work, fall back to the global history.
-            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-                $candidate = (try {
-                        ^atuin search --filter-mode global --limit 1 --search-mode prefix --cmd-only $ctx.line
-                        | lines
-                        | first
-                    } catch {
-                        null
-                    })
-            }
-
-            if $candidate == null or not ($candidate | str starts-with $ctx.line) {
-                null
-            } else {
-                ($candidate | str substring (($ctx.line | str length))..)
-            }
-        }
-    }
-}
-
-$env.EDITOR = "nvim"
-
-$env.config.hooks.display_output = { if (term size).columns >= 100 { table -e --icons } else { table } }
-
-# use homebrew sqlite3
-
-use std/util "path add"
-path add $"(brew --prefix sqlite3 | str trim | path join bin)"
-
-source scripts/macos.nu
-
-ulimit -n 10000
-
-# Configure nu_plugin_skim
-# See: https://github.com/idanarye/nu_plugin_skim/tree/main
-$env.SKIM_DEFAULT_OPTIONS = "--bind ctrl-o:preview-page-up,ctrl-p:preview-page-down,ctrl-t:toggle-preview"
