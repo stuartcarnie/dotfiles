@@ -2,5 +2,10 @@
 
 # Show outdated brew packages
 export def "outdated" []: nothing -> table {
-    ^brew outdated -v | parse --regex '^(?<name>\S+) \((?<current>\S+)\) < (?<latest>\S+)(?: \[pinned at (?<pinned>\S+)\])?$'
+    ^brew outdated --json
+    | from json
+    | items {|type, pkgs| $pkgs | insert type $type }
+    | flatten
+    | update installed_versions { str join ", " }
+    | move type --before name
 }
