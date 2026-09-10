@@ -87,6 +87,8 @@ $env.config.hooks.display_output = { if (term size).columns >= 100 { table -e --
 path add "/opt/homebrew/opt/sqlite/bin"
 
 source scripts/macos.nu
+source scripts/from-env.nu
+source scripts/metal.nu
 
 ulimit -n 10000
 
