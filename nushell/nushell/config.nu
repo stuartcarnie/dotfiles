@@ -2,7 +2,8 @@ use std/util "path add"
 
 $env.CARAPACE_BRIDGES = 'zsh,fish'
 
-let carapace_completer = {|spans|
+let carapace_completer = {|place|
+    let spans = $place.command
     # if the current command is an alias, get it's expansion
     let expanded_alias = (scope aliases | where name == $spans.0 | $in.0?.expansion?)
 
