@@ -23,6 +23,7 @@ $env.config.abbreviations = {
     l: "ls"
     ll: "ls -l"
     la: "ls -al"
+    aliases: "scope aliases"
 }
 
 # yazi is also y
@@ -159,6 +160,39 @@ if (which zoxide | is-not-empty) {
         }
     }]
 }
+
+# Cmd+Shift+C: copy the CWD as a full path and show a toast.
+$env.config.keybindings ++= [{
+    name: copy_cwd
+    modifier: super_shift
+    keycode: char_c
+    mode: [emacs vi_normal vi_insert]
+    event: { send: executehostcommand cmd: " $env.PWD | pbcopy; toast $'Copied ($env.PWD)'" }
+}]
+
+# Replace the whitespace-delimited word under the cursor with its absolute, expanded path.
+def expand-path-at-cursor [] {
+    let buf = (commandline)
+    let pos = (commandline get-cursor)
+    let before = ($buf | str substring 0..<$pos)
+    let after = ($buf | str substring $pos..)
+    let start = $pos - ($before | split row -r '\s' | last | str length)
+    let end = $pos + ($after | split row -r '\s' | first | str length)
+    let word = ($buf | str substring $start..<$end)
+    let expanded = (try { $word | path expand } catch { $word })
+    if ($word | is-empty) or $expanded == $word { print -n (char bel); return }
+    commandline edit --replace (($buf | str substring 0..<$start) + $expanded + ($buf | str substring $end..))
+    commandline set-cursor ($start + ($expanded | str length))
+}
+
+# Ctrl+`: expand the path under the cursor in place.
+$env.config.keybindings ++= [{
+    name: expand_path_at_cursor
+    modifier: control
+    keycode: 'char_`'
+    mode: [emacs vi_normal vi_insert]
+    event: { send: executehostcommand cmd: " expand-path-at-cursor" }
+}]
 
 # configure pueue
 if (which pueue | is-not-empty) {

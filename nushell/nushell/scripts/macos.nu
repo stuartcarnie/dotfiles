@@ -35,5 +35,5 @@ def "http download" [url] {
 
 # Display disk usage information
 def "df" [] : nothing -> table {
-    ^df -H | detect columns --guess | update cells -c [Used Size Avail] { into filesize }
+    ^df -H | detect columns --guess | update cells { into filesize } Used Size Avail
 }
