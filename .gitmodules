@@ -13,3 +13,6 @@
 [submodule "nushell/external/nu_scripts"]
 	path = nushell/external/nu_scripts
 	url = https://github.com/nushell/nu_scripts.git
+[submodule "nushell/external/nu-rex-integration"]
+	path = nushell/external/nu-rex-integration
+	url = https://github.com/fdncred/nu-rex-integration

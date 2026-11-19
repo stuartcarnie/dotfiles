@@ -198,3 +198,7 @@ $env.config.keybindings ++= [{
 if (which pueue | is-not-empty) {
     update-script generated_completions/ "pueue.nu" { pueue completions nushell }
 }
+
+# Rex integration (https://github.com/fdncred/nu-rex-integration); must stay last so its hooks are kept
+use nu-rex-integration/nurx.nu *
+nurx enable status last layout tint
