@@ -25,13 +25,14 @@ export def main [
     let frame = {|t|
         let fg = $"\e[38;2;(do $rgb $FG $t)m"
         let icon = $"\e[38;2;(do $rgb $lvl.color $t)m($lvl.icon)($fg)"
-        print -n $"\e7($fg)(do $draw [$lines.0 $"│ ($icon) ($msg) │" $lines.2])\e[0m\e8"
+        # Write to the tty directly: `print` in a job goes through reedline, which adds a line per call.
+        $"\e7($fg)(do $draw [$lines.0 $"│ ($icon) ($msg) │" $lines.2])\e[0m\e8" | save -a /dev/tty
     }
     job spawn {
-        # Redraw while holding: reedline clears below the prompt on every repaint.
+        # Redraw while holding: reedline clears below the prompt when it repaints.
         let until = (date now) + $hold
         while (date now) < $until { do $frame 0; sleep 50ms }
         for i in 1..16 { do $frame ($i / 16); sleep 25ms }
-        print -n $"\e7(do $draw ($lines | each {|l| '' | fill -w ($l | str length -g) }))\e8"
+        $"\e7(do $draw ($lines | each {|l| '' | fill -w ($l | str length -g) }))\e8" | save -a /dev/tty
     } | ignore
 }
